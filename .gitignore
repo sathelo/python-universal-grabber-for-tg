@@ -1,0 +1,11 @@
+.DS_Store
+
+env
+__pycache__
+
+.env
+*.pyc
+
+*.session
+settings.json
+database.db
