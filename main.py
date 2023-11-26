@@ -58,7 +58,13 @@ async def get_and_save_post(session_name):
                     cursor.execute("INSERT INTO posts (id) VALUES (?)", (message.id,))
                     db.commit()
                     photo_path = await download_photo(client, message.id, channel_id)
-                    post_to_vk(photo_path)
+                    try:
+                        post_to_vk(photo_path)
+                    except:
+                        if (photo_path):
+                            # Удаление файла после использования
+                            os.remove(photo_path)
+                        continue
                     break # Если пост успешно обработан, выходим из цикла
             else:
                 continue  # Если медиафайл отсутствует, продолжаем итерацию
