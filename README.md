@@ -34,3 +34,6 @@ schedule.every().day.at("21:00").do(job, session_name="session")
 | vk_token         | [подробнее про vk_token (нас интересует VK Admin)](https://vkhost.github.io/) | vk1.123123k123123123123k123123123123k123123123123k123123123123k123123 |
 | vk_group_id      | id сообщества вк                                                              | -128735612835                                                         |
 | source_url       | ссылка добавляется в источник к вк посту                                      | https://www.google.com/                                               |
+| inst_username    | логин в виде юзернейма (полное имя инстаграм сообщества)                      | username                                                              |
+| inst_password    | пароль от инстаграм аккаунта                                                  | password                                                              |
+| inst_password    | комментарий под инстаграм постом (можно писать с хэштегами)                   | Test caption for photo with #hashtags                                 |
