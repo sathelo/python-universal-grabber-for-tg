@@ -6,5 +6,8 @@
     "channel_id": -0,
     "vk_token": "vk_token",
     "vk_group_id": -0,
-    "source_url": "source_url"
+    "source_url": "source_url",
+    "inst_username": "inst_username",
+    "inst_password": "inst_password",
+    "inst_caption": "Test caption for photo with #hashtags"
 }

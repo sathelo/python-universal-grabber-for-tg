@@ -1,11 +1,17 @@
 certifi==2023.7.22
 charset-normalizer==3.3.1
 idna==3.4
+instagrapi==2.0.0
+Pillow==10.1.0
 pyaes==1.6.1
 pyasn1==0.5.0
+pycryptodomex==3.18.0
+pydantic==1.10.9
+PySocks==1.7.1
 requests==2.31.0
 rsa==4.9
 schedule==1.2.1
 Telethon==1.31.1
+typing_extensions==4.8.0
 urllib3==2.0.7
 vk-api==11.9.9

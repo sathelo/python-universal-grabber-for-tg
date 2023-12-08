@@ -7,6 +7,9 @@ import schedule
 import time
 from telethon.sync import TelegramClient
 from telethon.tl.types import MessageMediaPhoto
+from instagrapi import Client
+from PIL import Image
+
 
 # Загрузка настроек из файла JSON
 with open('settings.json') as f:
@@ -20,6 +23,9 @@ channel_id = settings['channel_id']
 vk_token = settings['vk_token']
 vk_group_id = settings['vk_group_id']
 source_url = settings['source_url']
+inst_username = settings['inst_username']
+inst_password = settings['inst_password']
+inst_caption = settings['inst_caption']
 
 # Создание таблицы, если она еще не существует
 db = sqlite3.connect('database.db')
@@ -32,15 +38,25 @@ cursor.execute('''
 cursor.close()
 db.close()   
 
+# Конвертирование png-картинки в jpg-картинку
+def convert_png_to_jpg(image_path):
+    image = Image.open(image_path)
+    jpg_path = os.path.splitext(image_path)[0] + ".jpg"
+    image.convert("RGB").save(jpg_path, "JPEG")
+    return jpg_path
+
 # Скачивание фотографии, по индентификатоиру поста в канале
 async def download_photo(client: TelegramClient, message_id: int, channel_id: int):
     message = await client.get_messages(channel_id, ids=message_id)
     if message and message.media:
         path = await client.download_media(message.media)
-        return path
-    else:
-        return None
-
+        if path.lower().endswith(".jpg"):
+            return path
+        if path.lower().endswith(".png"):
+            path = convert_png_to_jpg(path)
+            return path
+    return None
+ 
 # Асинхронная функция для получения и сохранения поста
 async def get_and_save_post(session_name):
      # Открытие соединения с базой данных
@@ -60,6 +76,7 @@ async def get_and_save_post(session_name):
                     photo_path = await download_photo(client, message.id, channel_id)
                     try:
                         post_to_vk(photo_path)
+                        post_to_inst(photo_path, inst_caption)
                     except:
                         if (photo_path):
                             # Удаление файла после использования
@@ -86,6 +103,16 @@ def post_to_vk(photo_path):
 
     # Удаление файла после использования
     os.remove(photo_path)
+
+# Функция для публикации поста в сообщество Инстаграм
+def post_to_inst(photo_path, caption):
+    media_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), photo_path)
+
+    cl = Client()
+    cl.login(inst_username, inst_password)
+
+    media = cl.photo_upload(media_path, caption)
+    media.dict()
 
 # Функция для запуска главной функции по расписанию
 def job(session_name):
