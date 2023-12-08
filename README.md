@@ -36,4 +36,4 @@ schedule.every().day.at("21:00").do(job, session_name="session")
 | source_url       | ссылка добавляется в источник к вк посту                                      | https://www.google.com/                                               |
 | inst_username    | логин в виде юзернейма (полное имя инстаграм сообщества)                      | username                                                              |
 | inst_password    | пароль от инстаграм аккаунта                                                  | password                                                              |
-| inst_password    | комментарий под инстаграм постом (можно писать с хэштегами)                   | Test caption for photo with #hashtags                                 |
+| inst_caption     | комментарий под инстаграм постом (можно писать с хэштегами)                   | Test caption for photo with #hashtags                                 |
