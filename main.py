@@ -59,6 +59,9 @@ async def download_photo(client: TelegramClient, message_id: int, channel_id: in
  
 # Асинхронная функция для получения и сохранения поста
 async def get_and_save_post(session_name):
+    vk_success = False
+    inst_success = False
+
      # Открытие соединения с базой данных
     db = sqlite3.connect('database.db')
     cursor = db.cursor()
@@ -75,13 +78,19 @@ async def get_and_save_post(session_name):
                     db.commit()
                     photo_path = await download_photo(client, message.id, channel_id)
                     try:
-                        post_to_vk(photo_path)
-                        post_to_inst(photo_path, inst_caption)
-                    except:
+                        if not vk_success:
+                            post_to_vk(photo_path)
+                            vk_success = True
+                        if not inst_success:
+                            post_to_inst(photo_path, inst_caption)
+                            inst_success = True
+                    except Exception as error:
+                        print(error)
+                        continue
+                    finally: 
                         if (photo_path):
                             # Удаление файла после использования
                             os.remove(photo_path)
-                        continue
                     break # Если пост успешно обработан, выходим из цикла
             else:
                 continue  # Если медиафайл отсутствует, продолжаем итерацию
@@ -100,9 +109,6 @@ def post_to_vk(photo_path):
     
     # Публикация поста
     vk.wall.post(owner_id=vk_group_id, copyright=source_url, attachments=attachment)
-
-    # Удаление файла после использования
-    os.remove(photo_path)
 
 # Функция для публикации поста в сообщество Инстаграм
 def post_to_inst(photo_path, caption):
