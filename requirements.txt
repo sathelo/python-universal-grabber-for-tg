@@ -5,7 +5,7 @@ instagrapi==2.0.0
 Pillow==10.1.0
 pyaes==1.6.1
 pyasn1==0.5.0
-pycryptodomex==3.18.0
+pycryptodomex==3.19.1
 pydantic==1.10.9
 PySocks==1.7.1
 requests==2.31.0
