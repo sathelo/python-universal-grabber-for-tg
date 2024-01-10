@@ -8,8 +8,12 @@ import time
 from telethon.sync import TelegramClient
 from telethon.tl.types import MessageMediaPhoto
 from instagrapi import Client
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
+import warnings
 
+
+# Игнорировать предупреждения
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 # Загрузка настроек из файла JSON
 with open('settings.json') as f:
@@ -26,6 +30,8 @@ source_url = settings['source_url']
 inst_username = settings['inst_username']
 inst_password = settings['inst_password']
 inst_caption = settings['inst_caption']
+watermark_text_for_vk = settings['watermark_text_for_vk']
+watermark_text_for_inst = settings['watermark_text_for_inst']
 
 # Создание таблицы, если она еще не существует
 db = sqlite3.connect('database.db')
@@ -45,6 +51,19 @@ def convert_png_to_jpg(image_path):
     image.convert("RGB").save(jpg_path, "JPEG")
     return jpg_path
 
+# Добавление водяного знака
+def adding_watermark(image_path, watermark_text):
+    image = Image.open(image_path)
+    draw = ImageDraw.Draw(image)
+    font_size = 18
+    font = ImageFont.truetype("assets/fonts/arial.ttf", font_size)
+    text_width, text_height = draw.textsize(watermark_text, font=font)
+    position = (image.width - text_width, image.height - text_height)
+    draw.text(position, watermark_text, font=font, fill=(0, 0, 0, 64))
+    output_path = os.path.splitext(image_path)[0] + "_watermarked.jpg"
+    image.save(output_path)
+    return output_path
+
 # Скачивание фотографии, по индентификатоиру поста в канале
 async def download_photo(client: TelegramClient, message_id: int, channel_id: int):
     message = await client.get_messages(channel_id, ids=message_id)
@@ -62,7 +81,7 @@ async def get_and_save_post(session_name):
     vk_success = False
     inst_success = False
 
-     # Открытие соединения с базой данных
+    # Открытие соединения с базой данных
     db = sqlite3.connect('database.db')
     cursor = db.cursor()
 
@@ -79,18 +98,21 @@ async def get_and_save_post(session_name):
                     photo_path = await download_photo(client, message.id, channel_id)
                     try:
                         if not vk_success:
-                            post_to_vk(photo_path)
+                            photo_path_with_watermark = adding_watermark(photo_path, watermark_text_for_vk)
+                            post_to_vk(photo_path_with_watermark)
                             vk_success = True
                         if not inst_success:
-                            post_to_inst(photo_path, inst_caption)
+                            photo_path_with_watermark = adding_watermark(photo_path, watermark_text_for_inst)
+                            post_to_inst(photo_path_with_watermark, inst_caption)
                             inst_success = True
                     except Exception as error:
                         print(error)
                         continue
                     finally: 
-                        if (photo_path):
-                            # Удаление файла после использования
-                            os.remove(photo_path)
+                        # Удаление файла/файлов после использования
+                        for path in [photo_path, photo_path_with_watermark]:
+                            if path and os.path.exists(path):
+                                os.remove(path)
                     break # Если пост успешно обработан, выходим из цикла
             else:
                 continue  # Если медиафайл отсутствует, продолжаем итерацию

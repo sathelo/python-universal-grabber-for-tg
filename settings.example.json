@@ -9,5 +9,7 @@
     "source_url": "source_url",
     "inst_username": "inst_username",
     "inst_password": "inst_password",
-    "inst_caption": "Test caption for photo with #hashtags"
+    "inst_caption": "Test caption for photo with #hashtags",
+    "watermark_text_for_vk": "example watermark text for vk",
+    "watermark_text_for_inst": "example watermark text for inst"
 }
