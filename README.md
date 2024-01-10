@@ -1,6 +1,6 @@
 # Universal grabber for tg
 
-Full automation of posting posts from tg to VK and Instagram. This script collects old posts from tg and posts them at a given time to social networks such as VK and Instagram
+Полная автоматизация публикации постов из тг в вк и инстаграм. Этот скрипт собирает старые посты из тг и публикует их в заданное время в соцсетях: ВК, Инстаграм
 
 # Use
 
